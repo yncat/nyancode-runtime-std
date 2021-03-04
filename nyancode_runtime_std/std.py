@@ -14,14 +14,17 @@ last_one_shot_hstream = None  # 最後に再生したワンショットのスト
 class Options:
     # データディレクトリのルートを指定する。
     data_directory = ""
+    # 親ウィンドウを指定する。
+    parent_window = None
 
 
 options = Options()
 
 
-def configure(data_directory):
+def configure(data_directory, parent_window):
     """モジュールの初期設定を受け取って保存する。"""
     options.data_directory = data_directory
+    options.parent_window = parent_window
 
 
 def message(title, message):
@@ -46,10 +49,17 @@ def randomPattern(max):
     return random.randint(1, max)
 
 
-def playOneShot(path):
+def playOneShot(path, wait=False):
     hstream = pybass.BASS_StreamCreateFile(False, getRealPath(
         path), 0, 0, pybass.BASS_UNICODE | pybass.BASS_STREAM_AUTOFREE)
     pybass.BASS_ChannelPlay(hstream, True)
+    if wait:
+        _waitOneShot(hstream)
+
+
+def _waitOneShot(hstream):
+    while pybass.BASS_ChannelIsActive(hstream) == pybass.BASS_ACTIVE_PLAYING:
+        time.sleep(0.02)
 
 
 # initialization
