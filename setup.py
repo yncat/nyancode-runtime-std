@@ -42,6 +42,7 @@ setup(
     packages=[
         package_name,
         "%s.pybass" % (package_name)],
+    include_package_data=True,
     url=url,
     description='nyancode standard runtime library',
     long_description=long_description,
