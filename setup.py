@@ -41,7 +41,8 @@ setup(
     author_email=author_email,
     packages=[
         package_name,
-        "%s.pybass" % (package_name)],
+        "%s.pybass" % (package_name),
+        "%s.__pyinstaller" % (package_name)],
     include_package_data=True,
     url=url,
     description='nyancode standard runtime library',
