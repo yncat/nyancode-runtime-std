@@ -58,7 +58,7 @@ import ctypes
 import platform
 import os
 
-if sys.version_info.major >= 3 and sys.version_info.minor >= 8:
+if sys.version_info.major >= 3 and sys.version_info.minor >= 8 and not hasattr(sys, "frozen"):
     os.add_dll_directory(os.path.dirname(os.path.abspath(__file__)))
 
 if sys.hexversion < 0x02060000:
