@@ -58,14 +58,14 @@ import ctypes
 import platform
 import os
 
-if sys.version_info.major >= 3 and sys.version_info.minor >= 8:
+if sys.version_info.major >= 3 and sys.version_info.minor >= 8 and not sys.frozen:
     os.add_dll_directory(os.path.dirname(os.path.abspath(__file__)))
 
 if sys.hexversion < 0x02060000:
     ctypes.c_bool = ctypes.c_byte
 
 if platform.system().lower() == 'windows':
-    bass_module = ctypes.WinDLL(os.path.split(__file__)[0] + '\\bass')
+    bass_module = ctypes.WinDLL('bass')
     func_type = ctypes.WINFUNCTYPE
 else:
     # correct by Wasylews (sabov.97@mail.ru), thank him
