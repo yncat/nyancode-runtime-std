@@ -1,1 +1,1 @@
-recursive-include nyancode_runtime_std/bass *
+recursive-include nyancode_runtime_std/pybass *
