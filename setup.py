@@ -41,11 +41,8 @@ setup(
     author_email=author_email,
     packages=[
         package_name,
-        "%s.archivers" %
-        (package_name),
-        "%s.loggers" %
-        (package_name)],
+        "%s.pybass" % (package_name)],
     url=url,
-    description='patch maker for actlaboratory',
+    description='nyancode standard runtime library',
     long_description=long_description,
 )
