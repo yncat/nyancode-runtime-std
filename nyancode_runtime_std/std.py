@@ -8,7 +8,9 @@ import wx
 from .pybass import pybass
 
 
-last_one_shot_hstream = None  # 最後に再生したワンショットのストリームハンドル。「最後に再生した音を止める」のためにとっておく。
+class InternalVars:
+    last_one_shot_hstream = None  # 最後に再生したワンショットのストリームハンドル。「最後に再生した音を止める」のためにとっておく。
+    last_environment_hstream = None  # 最後に再生した環境音のストリームハンドル。現在再生中でも、名前は last。上と合わせている。
 
 
 class Options:
@@ -18,13 +20,22 @@ class Options:
     parent_window = None
 
 
-options = Options()
-
-
 def configure(data_directory, parent_window):
     """モジュールの初期設定を受け取って保存する。"""
     options.data_directory = data_directory
     options.parent_window = parent_window
+
+
+def onStart():
+    pass
+
+
+def onExit():
+    if internalVars.last_environment_hstream:
+        pybass.BASS_ChannelSlideAttribute(
+            internalVars.last_environment_hstream, pybass.BASS_ATTRIB_VOL, 0, 500)
+        time.sleep(0.6)
+        pybass.BASS_ChannelStop(internalVars.last_environment_hstream)
 
 
 def message(title, message):
@@ -57,12 +68,28 @@ def playOneShot(path, wait=False):
         _waitOneShot(hstream)
 
 
+def playEnvironment(path):
+    hstream = pybass.BASS_StreamCreateFile(
+        False,
+        getRealPath(path),
+        0,
+        0,
+        pybass.BASS_UNICODE | pybass.BASS_STREAM_AUTOFREE | pybass.BASS_SAMPLE_LOOP)
+    pybass.BASS_ChannelSetAttribute(hstream, pybass.BASS_ATTRIB_VOL, 0)
+    pybass.BASS_ChannelPlay(hstream, True)
+    pybass.BASS_ChannelSlideAttribute(
+        hstream, pybass.BASS_ATTRIB_VOL, 0.5, 500)
+    internalVars.last_environment_hstream = hstream
+
+
 def _waitOneShot(hstream):
     while pybass.BASS_ChannelIsActive(hstream) == pybass.BASS_ACTIVE_PLAYING:
         time.sleep(0.02)
 
 
 # initialization
+internalVars = InternalVars()
+options = Options()
 if pybass.BASS_Init(-1, 44100, 0, 0, 0) is False:
     raise ImportError("could not initialize audio")
 
